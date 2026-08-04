@@ -6,15 +6,15 @@
 const db=require('./config/db');
 
 //import other core packages
-const express=require('express');
-const cors=require('cors');
+const express=require('express');  // to setup our server 
+const cors=require('cors');    //so out frontend and backend can connect easily
 
 const app=express();
 
 app.use(cors()); //allows the frontend on port 3000 to fetch data 
 app.use(express.json()); 
 
-//GET api
+//GET request just for checking is json array is showing up 
 app.get('/api/questions', (req,res)=>{
 
     const sql="SELECT id,question,option1,option2,option3,option4 FROM aptitude_questions";
@@ -29,7 +29,7 @@ app.get('/api/questions', (req,res)=>{
 });
 
 
-//POST api for answer check
+//POST request for answer check
 app.post('/api/verify',(req,res)=>{
 
     //using the destructure
@@ -55,7 +55,7 @@ app.post('/api/verify',(req,res)=>{
 });
 
 
-//POST api for leaderboard
+//POST request for leaderboard
 
 app.post('/api/leaderboard',(req,res)=>{
 
@@ -77,7 +77,7 @@ app.post('/api/leaderboard',(req,res)=>{
 });
 
 
-//GET api for leaderboard
+//GET request for leaderboard
 
 app.get('/api/leaderboard',(req,res)=>{
 
@@ -95,6 +95,8 @@ app.get('/api/leaderboard',(req,res)=>{
 
 
 const PORT = 5000;
+
+//using port 5000 for runnig our backend server
 app.listen(PORT,()=> {
     console.log(`Backend server successfully running on http://localhost:${PORT}`);
 });
