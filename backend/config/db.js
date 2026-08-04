@@ -45,6 +45,14 @@ db.serialize(()=>{
         classification TEXT NOT NULL,
         time_taken INTEGER NOT NULL)
         `);
+
+
+    //custom questions
+    db.run(`INSERT INTO aptitude_questions (question,option1,option2 ,option3, option4, correct_answers) VALUES ('What is 15% of 200','35','20','30','15','30')`);
+
+    db.run(`INSERT INTO aptitude_questions (question,option1,option2,option3,option4,correct_answers) VALUES ('If a code uses CAT to mean DBU, what does DOG mean in the same code?','EPH','FPI','CPV','EQH','EPH') `);
+
+    db.run(`INSERT INTO aptitude_questions (question,option1,option2,option3,option4,correct_answers) VALUES ('Find the next number in the pattern: 2, 4, 8, 16, ?','20','32','40', '18','32')`);
 });
 
 //Testing the data base table 
