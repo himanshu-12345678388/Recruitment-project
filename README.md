@@ -43,6 +43,15 @@ npm start
 ```
 *Once initialized, point your browser to `http://localhost:3000` to interact with the assessment ecosystem.*
 
+
+##  Operational System Status
+
+Below is a live runtime snapshot of the decoupled full-stack architecture loops executing successfully. The left terminal shows the **Node.js Express API & SQLite Relational Table Core** auto-seeding datasets, while the right terminal displays the **Webpack 5 compilation bundle server** tracking components over Port 3000:
+
+![Decoupled System Terminals Live Runtime Status](./terminals.png)
+
+
+
 ---
 
 ##  API Documentation & Endpoint Architecture
