@@ -8,7 +8,7 @@ A decoupled, high-performance web platform designed to evaluate candidate engine
 
 ### Frontend Architecture
 * **React 18**:Very less use as i had just started learning it, It is handling asynchronous component lifecycles, and managing state across 5 distinct assessment stages without heavy routing overheard.
-* **Custom Webpack 5 Bundle Layer**: used it as bundler for the frontend also installed webpack dev-server so we do not have to restart the server again and again it restarts whenever you press ctrl+c
+* **Custom Webpack 5 Bundle Layer**: used it as bundler for the frontend also installed webpack dev-server so we do not have to restart the server again and again it restarts whenever you press ctrl+s
 * **Babel Layer**: Tailored with specialized presets (`@babel/preset-env`, `@babel/preset-react`) implementing modern automatic JSX transform engines.
 * **Vanilla CSS (Inter Font UI)**: Used very less styling as time was less. This enforces a lightweight, slate-blue enterprise visual framework with zero dependency processing bottlenecks.
 
