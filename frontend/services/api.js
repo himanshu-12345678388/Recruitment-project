@@ -46,11 +46,11 @@ export const apiService = {
 
 
   //verify answer api
-  async verifyCryptoAnswer(id,decodeSubmission){
+  async verifyCryptoAnswer(id,decodedSubmission){
     const response = await fetch(`${BASE_URL}/crypto/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, decodeSubmission })
+      body: JSON.stringify({ id, decodedSubmission })
     });
     if(!response.ok) throw new Error('Verification request broken');
     return response.json();

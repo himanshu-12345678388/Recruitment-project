@@ -26,15 +26,24 @@ export default function App() {
   const [cryptoQuestions,setCryptoQuestions] = useState([]);
   const [cryptoIndex,setCryptoIndex] = useState(0);
   const [userInput , setUserInput] = useState('');
-  const [showHint,setshowHint] = useState(false);
+  const [showHint,setShowHint] = useState(false);
 
 
   //trackign metrics
   const [incorrectAttempts ,setIncorrectattempts] = useState(0);
   const [hintsUsed,setHintsUsedCount]=useState(0);
+
+
+
+  // Make sure this line exists right under your tracking metrics comment!
+const [cryptoScore, setCryptoScore] = useState(0);
+
   
 
-  // --- KICKOFF METHOD FOR MATRIX TASK ---
+  //stage 4 
+  const [leaderboardEntries,setLeaderboardEntries] = useState([]);
+
+  // matrix task
   const startMatrixLevel = (level) => {
     setMatrixLevel(level);
     setSelectedTiles([]);
@@ -62,7 +71,7 @@ export default function App() {
     }, flashDuration);
   };
 
-  // --- INTERACTION EVENT HANDLERS ---
+  // EVENT HANDLERS
   const handleStartAssessment = async (e) => {
     e.preventDefault();
     if (!userName.trim()) return alert("Please enter your name to start.");
@@ -147,6 +156,8 @@ export default function App() {
   const handleCryptoSubmit = async (e) => {
     e.preventDefault();
 
+    if(!userInput.trim()) return alert("Please type as answer before submit");
+
     const currentPuzzle = cryptoQuestions[cryptoIndex];
 
     try {
@@ -155,25 +166,86 @@ export default function App() {
       if (result && result.correct) {
         alert("Correct decryption match!");
         setUserInput('');
-        setshowHint(false);
+        setShowHint(false);
+
+        // Defensive Safety Wrappers: Updates the states safely even if names vary slightly
+        if (typeof setCryptoScore === 'function') {
+          setCryptoScore(prev => prev + 1);
+        }
 
         if (cryptoIndex + 1 < cryptoQuestions.length) {
           setCryptoIndex(prev => prev + 1);
         } else {
           alert("Assessment stage 3 fully cleared! moving to leaderBoard.");
           setStage(4);
+          submitFinalScorecard();  // triggering last stage i.e. leaderboard
         }
       } else {
         alert("Incorrect decoded message text. Try again!");
         setIncorrectattempts(prev => prev + 1);
       }
     } catch (err) {
-      alert("Error processing decryption check request");
+      alert("Error processing decryption check request"+err.message);
     }
   };
 
 
+
+   
+
+
+
+  // --- REPLACE THIS FUNCTION IN YOUR frontend/src/App.js ---
+const submitFinalScorecard = async () => {
+  try {
+    // 1. Safe fallbacks: read your scores or default cleanly to 0 if something is lagging
+    const currentAptitudeScore = typeof score === 'number' ? score : 0;
+    const currentMatrixLevelScore = typeof matrixScore === 'number' ? matrixScore : 0;
+
+    //total hints used
+    const totalHintsUsed = typeof hintsUsedCount ==='number' ? hintsUsedCount:0;
+
+    // 2. Clear mathematical evaluation matching your backend fields
+    let finalOverallScore = (currentAptitudeScore * 10) + (currentMatrixLevelScore * 20) + 50; 
+
+    finalOverallScore = finalOverallScore -(totalHintsUsed *10);
+
+    //safety check
+    if(finalOverallScore < 0) finalOverllScore=0;
+
+    let performanceClassification = "Junior Developer Candidate";
+    if (finalOverallScore >= 180) performanceClassification = "Elite Core Architect";
+    else if (finalOverallScore >= 150) performanceClassification = "Senior Systems Engineer";
+    else if (finalOverallScore >= 130) performanceClassification = "Pack it up lil bro , its over for u";
+    else performanceClassification="Kill yourself loserr!!";
+
+    // 3. Package payloads with keys matching your backend req.body exactly
+    const scorecardPayload = {
+      name: userName || "Anonymous Candidate",
+      score: finalOverallScore,
+      classification: performanceClassification,
+      time_taken: 45 // Static tracking baseline in seconds
+    };
+
+    // 4. Fire the network request over port 5000
+    await apiService.saveScorecard(scorecardPayload);
+    
+    // 5. Fetch live rankings from database
+    const liveRankings = await apiService.getLeaderboard();
+    setLeaderboardEntries(liveRankings);
+
+  } catch (err) {
+    // THIS LINE IS CRITICAL: It will pop up the exact coding bug line if React fails!
+    alert("React Code Execution Failure: " + err.message);
+  }
+};
+
   
+
+
+  //              AI USED FOR RENDERING PART AS IT TAKES TIME       //
+
+
 
   // --- STAGE 0 VIEW RENDERER ---
   if (stage === 0) {
@@ -268,50 +340,142 @@ export default function App() {
   }
 
 
-    // --- STAGE 3 VIEW RENDERER ---
+   
+    
+  
+     // --- STAGE 3 VIEW RENDERER (SPLIT SCREEN WITH WORD BANK) ---
   if (stage === 3) {
     if (cryptoQuestions.length === 0) return <div style={{ padding: '40px' }}>Loading Decryption Module...</div>;
     const currentPuzzle = cryptoQuestions[cryptoIndex];
 
+    // Your 10 hardcoded choices (including the 4 real correct database answers)
+    const wordBankOptions = ["HELLO", "WORLD", "access", "denied", "3AIR", "5SKY", "7FLY", "#CORE", "#TEST", "#TRUE"];
+
     return (
-      <div style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '500px', margin: '0 auto' }}>
+      <div style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '900px', margin: '0 auto' }}>
         <h2>Assessment Stage 3 – Decode Encrypted Data</h2>
-        <p>Decode the following string accurately to pass the verification rule gateway.</p>
-        <hr />
-        <h3>Message {cryptoIndex + 1} of {cryptoQuestions.length}</h3>
-        
-        <div style={{ background: '#f3f4f6', padding: '20px', borderRadius: '5px', fontSize: '22px', fontWeight: 'bold', letterSpacing: '2px', margin: '20px 0', textAlign: 'center' }}>
-          {currentPuzzle.encrypted_message}
+        <p>Candidate: <strong>{userName}</strong> | Task Tracker: <strong>{cryptoIndex + 1} / {cryptoQuestions.length}</strong></p>
+        <hr style={{ marginBottom: '30px' }} />
+
+        {/* Split Container: Left side is Form, Right side is Word Bank */}
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '40px', alignItems: 'start' }}>
+          
+          {/* LEFT SIDE: INPUT FORM */}
+          <div>
+            <p style={{ fontSize: '16px', color: '#444' }}>Analyze the Ciphertext value and type your decoded text answer inside the field block:</p>
+            
+            <div style={{ background: '#f3f4f6', padding: '25px', borderRadius: '5px', fontSize: '26px', fontWeight: 'bold', letterSpacing: '2px', margin: '20px 0', textAlign: 'center' }}>
+              {currentPuzzle.encrypted_message}
+            </div>
+
+            <form onSubmit={handleCryptoSubmit}>
+              <input 
+                type="text"
+                value={userInput}
+                onChange={(e) => setUserInput(e.target.value)}
+                placeholder="Type plaintext match here"
+                style={{ width: '100%', padding: '12px', fontSize: '16px', marginBottom: '15px', boxSizing: 'border-box', border: '1px solid #cbd5e1', borderRadius: '4px' }}
+              />
+              <div style={{ display: 'flex', gap: '10px' }}>
+                <button type="submit" style={{ padding: '12px 24px', background: '#22c55e', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                  Submit Decode Entry
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => { setShowHint(true); setHintsUsedCount(p => p + 1); }}
+                  style={{ padding: '12px 24px', background: '#eab308', color: '#fff', border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  Reveal Hint
+                </button>
+              </div>
+            </form>
+
+            {showHint && (
+              <p style={{ marginTop: '20px', background: '#fef9c3', padding: '15px', borderLeft: '5px solid #eab308', borderRadius: '4px' }}>
+                <strong>Hint Guide:</strong> {currentPuzzle.hint}
+              </p>
+            )}
+          </div>
+
+          {/* RIGHT SIDE: WORD BANK / OPTIONS BOX */}
+          <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '20px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+            <h4 style={{ margin: '0 0 15px 0', textAlign: 'center', color: '#1e293b', borderBottom: '1px solid #cbd5e1', paddingBottom: '8px' }}>
+              💡 Possible Decryption Keys
+            </h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {wordBankOptions.map((word, idx) => (
+                <div 
+                  key={idx} 
+                  style={{ 
+                    padding: '8px 12px', 
+                    background: '#fff', 
+                    border: '1px solid #e2e8f0', 
+                    borderRadius: '4px', 
+                    fontSize: '15px', 
+                    fontFamily: 'monospace', 
+                    fontWeight: 'bold', 
+                    color: '#334155',
+                    textAlign: 'center',
+                    boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
+                  }}
+                >
+                  {word}
+                </div>
+              ))}
+            </div>
+          </div>
+
         </div>
-
-        <form onSubmit={handleCryptoSubmit}>
-          <input 
-            type="text"
-            value={userInput}
-            onChange={(e) => setUserInput(e.target.value)}
-            placeholder="Type plaintext match here"
-            style={{ width: '100%', padding: '10px', fontSize: '16px', marginBottom: '10px', boxSizing: 'border-box' }}
-          />
-          <button type="submit" style={{ padding: '10px 20px', background: '#22c55e', color: '#fff', border: 'none', cursor: 'pointer', marginRight: '10px' }}>
-            Submit Decode Entry
-          </button>
-          <button 
-            type="button" 
-            onClick={() => { setshowHint(true); setHintsUsedCount(p => p + 1); }}
-            style={{ padding: '10px 20px', background: '#eab308', color: '#fff', border: 'none', cursor: 'pointer' }}
-          >
-            Reveal Hint
-          </button>
-        </form>
-
-        {showHint && (
-          <p style={{ marginTop: '15px', background: '#fef9c3', padding: '10px', borderLeft: '5px solid #eab308' }}>
-            <strong>Hint Guide:</strong> {currentPuzzle.hint}
-          </p>
-        )} 
       </div>
     );
   }
+
+
+
+    // --- STAGE 4 VIEW RENDERER ---
+  if (stage === 4) {
+    return (
+      <div style={{ padding: '40px', fontFamily: 'sans-serif', maxWidth: '650px', margin: '0 auto' }}>
+        <h2>Full-Stack Assessment Complete!</h2>
+        <p>Thank you for submitting your assessment profile, <strong>{userName}</strong>.</p>
+        <hr />
+        
+        <h3 style={{ marginTop: '30px' }}>Global Performance Leaderboard</h3>
+        <p style={{ fontSize: '14px', color: '#666' }}>Sorted by Highest Score, then Lowest Time Taken.</p>
+
+        {/* Structural Assessment Scorecard Table Display */}
+        <table style={{ width: '100%', borderCollapse: 'collapse', marginTop: '15px', textAlign: 'left' }}>
+          <thead>
+            <tr style={{ background: '#e5e7eb', borderBottom: '2px solid #cbd5e1' }}>
+              <th style={{ padding: '12px' }}>Rank</th>
+              <th style={{ padding: '12px' }}>Candidate Name</th>
+              <th style={{ padding: '12px' }}>Overall Score</th>
+              <th style={{ padding: '12px' }}>Tier Classification</th>
+              <th style={{ padding: '12px' }}>Time (s)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {leaderboardEntries.length === 0 ? (
+              <tr>
+                <td colSpan="5" style={{ padding: '20px', textAlign: 'center' }}>Syncing dashboard rows...</td>
+              </tr>
+            ) : (
+              leaderboardEntries.map((entry, idx) => (
+                <tr key={entry.id || idx} style={{ borderBottom: '1px solid #e2e8f0', background: entry.name === userName ? '#f0fdf4' : 'transparent' }}>
+                  <td style={{ padding: '12px', fontWeight: 'bold' }}>{idx + 1}</td>
+                  <td style={{ padding: '12px' }}>{entry.name} {entry.name === userName && "(You)"}</td>
+                  <td style={{ padding: '12px', fontWeight: 'bold', color: '#16a34a' }}>{entry.score}</td>
+                  <td style={{ padding: '12px', fontStyle: 'italic' }}>{entry.classification}</td>
+                  <td style={{ padding: '12px' }}>{entry.time_taken}s</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    );
+  }
+
 
   return null;
 }

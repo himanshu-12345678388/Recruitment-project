@@ -65,21 +65,21 @@ app.post('/api/verify',(req,res)=>{
 
 //POST request for leaderboard
 
-app.post('/api/leaderboard',(req,res)=>{
+app.post('/api/leaderboard',function(req,res){
 
     const {name, score, classification,time_taken}=req.body;
 
-    const sql=`INSERT INTO leaderboard(name,score,classfication,time_taken) VALUES (?,?,?,?)`;
+    const sql=`INSERT INTO leaderboard(name,score,classification,time_taken) VALUES (?,?,?,?)`;
 
-    db.run(sql,[name,score,classification,time_taken] , function(err) {
+    db.run(sql,[name,score,classification,time_taken], function(err) {
         if(err){
+            console.log("SQlITE  database crash cause:",err.message);
             return res.status(500).json({error:err.message});
         }
 
         res.json({
             succes:true,
-            message:"scorecard saved successfully!!",
-            id:this.lastID
+            message:"scorecard saved successfully!!"
         });
     });
 });
@@ -112,17 +112,25 @@ app.get('/api/crypto/questions',(req,res)=>{
 
 //validates answer
 app.post('/api/crypto/verify',(req,res)=>{
-    const {id,decodeSubmission} =req.body;
-    const sql = " SELECT  correct_decoded FROM encrypted_messages WHERE id=?";
+    const {id,decodedSubmission} = req.body;
+    const sql = "SELECT correct_decoded FROM encrypted_messages WHERE id=?";
 
+    
 
-    db.get(sql,[id],(errr,row)=>{
+    db.get(sql,[id],(err,row)=>{
         if (err) return res.status(500).json({error: err.message});
         if (!row) return res.status(404).json({error:"Puzzle not found"});
+     
+        //defensice check
+         const dbAnswer = (row.correct_decoded || "").toString().trim().toLowerCase();
+         const clientAnswer = (decodedSubmission || "").toString().trim().toLowerCase();
+
+         //TESTING PURPOSE
+          console.log(`[Crypto Verify] Comparing DB: "${dbAnswer}" vs Client: "${clientAnswer}"`);
 
         //case insensitive match
-        const isCorrect = row.correct_decoded.trim().toLowerCase() === decodeSubmission.trim().toLowerCase();
-        res.json({correct:isCorrect});
+        const isCorrect = dbAnswer=== clientAnswer
+        res.json({correct: isCorrect});
     });
 });
 
