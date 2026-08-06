@@ -1,14 +1,14 @@
 const BASE_URL = 'http://localhost:5000/api';
 
 export const apiService = {
-  // 1. Fetch questions from the backend
+  //  Fetching  questions from the backend
   async getQuestions() {
     const response = await fetch(`${BASE_URL}/questions`);
     if (!response.ok) throw new Error('Failed to fetch questions');
     return response.json();
   },
 
-  // 2. Send selected answer to backend for verification
+  //  selected answer answer verification
   async verifyAnswer(id, selectedAnswer) {
     const response = await fetch(`${BASE_URL}/verify`, {
       method: 'POST',
@@ -19,7 +19,7 @@ export const apiService = {
     return response.json();
   },
 
-  // 3. Save the final scorecard data
+  //  Save the final scorecard data
   async saveScorecard(scorecard) {
     const response = await fetch(`${BASE_URL}/leaderboard`, {
       method: 'POST',
@@ -30,7 +30,7 @@ export const apiService = {
     return response.json();
   },
 
-  // 4. Fetch the sorted leaderboards rows
+  //  Fetch the sorted leaderboards rows
   async getLeaderboard() {
     const response = await fetch(`${BASE_URL}/leaderboard`);
     if (!response.ok) throw new Error('Failed to fetch leaderboard');
