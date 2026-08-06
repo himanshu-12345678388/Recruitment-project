@@ -11,13 +11,21 @@ const cors=require('cors');    //so out frontend and backend can connect easily
 
 const app=express();
 
-app.use(cors()); //allows the frontend on port 3000 to fetch data 
+// Replace your old cors middleware with this dynamic block
+app.use(cors({
+  origin: function (origin, callback) {
+    // This automatically approves whatever address the browser uses (localhost or 127.0.0.1)
+    if (!origin) return callback(null, true);
+    return callback(null, true);
+  }
+}));
+
 app.use(express.json()); 
 
 //GET request just for checking is json array is showing up 
 app.get('/api/questions', (req,res)=>{
 
-    const sql="SELECT id,question,option1,option2,option3,option4 FROM aptitude_questions";
+    const sql="SELECT id,question,option1,option2,option3,option4 FROM aptitude_questions LIMIT 10";
 
     db.all(sql,[],(err,rows)=>{
         if(err){
@@ -33,7 +41,7 @@ app.get('/api/questions', (req,res)=>{
 app.post('/api/verify',(req,res)=>{
 
     //using the destructure
-    const {id,selctedanswer}=req.body;
+    const {id,selectedAnswer}=req.body;
 
     //fetching the correct answer
     const sql="SELECT correct_answers FROM aptitude_questions WHERE id= ?";
@@ -89,6 +97,32 @@ app.get('/api/leaderboard',(req,res)=>{
         }
 
         res.json(rows);
+    });
+});
+
+//fetched random puzzles excluding answers
+app.get('/api/crypto/questions',(req,res)=>{
+    const sql="SELECT id,encrypted_message,hint FROM encrypted_messages ORDER BY RANDOM() LIMIT 3";
+    db.all(sql,[],(err,rows)=>{
+        if( err ) return res.status(500).json({error:err.message});
+        res.json(rows);
+    });
+});
+
+
+//validates answer
+app.post('/api/crypto/verify',(req,res)=>{
+    const {id,decodeSubmission} =req.body;
+    const sql = " SELECT  correct_decoded FROM encrypted_messages WHERE id=?";
+
+
+    db.get(sql,[id],(errr,row)=>{
+        if (err) return res.status(500).json({error: err.message});
+        if (!row) return res.status(404).json({error:"Puzzle not found"});
+
+        //case insensitive match
+        const isCorrect = row.correct_decoded.trim().toLowerCase() === decodeSubmission.trim().toLowerCase();
+        res.json({correct:isCorrect});
     });
 });
 
