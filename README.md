@@ -2,18 +2,22 @@
 
 A decoupled, high-performance web platform designed to evaluate candidate engineering metrics over a multi-stage progression track. The application handles profile registration, dynamic aptitude evaluations, real-time spatial memory matrices, cryptographic text decryption challenges, and automatically saves and updates an indexed global scoreboard.
 
+
+frontend : port 3000
+backend :  port 5000
+
 ---
 
 ##  Tech Stack (AND WHY I CHOOSE IT)
 
 ### Frontend Architecture
 * **React 18**:Very less use as i had just started learning it, It is handling asynchronous component lifecycles, and managing state across 5 distinct assessment stages without heavy routing overheard.
-* **Custom Webpack 5 Bundle Layer**: used it as bundler for the frontend also installed webpack dev-server so we do not have to restart the server again and again it restarts whenever you press ctrl+c
+* **Custom Webpack 5 Bundle Layer**: used it as bundler for the frontend also installed webpack dev-server so we do not have to restart the server again and again it restarts whenever you press ctrl+s
 * **Babel Layer**: Tailored with specialized presets (`@babel/preset-env`, `@babel/preset-react`) implementing modern automatic JSX transform engines.
 * **Vanilla CSS (Inter Font UI)**: Used very less styling as time was less. This enforces a lightweight, slate-blue enterprise visual framework with zero dependency processing bottlenecks.
 
 ### Backend & Storage Architecture
-* **Node.js & Express**: Provides a lightweight, stateless asynchronous event loop to handle concurrent candidate endpoint requests securely.
+* **Node.js & Express**: Provides a lightweight, stateless asynchronous event loop to handle concurrent candidate endpoint requests securely.ALSO used nodemon to automatically restart the server when ctrl_s.
 * **SQLite3 (Relational Embedded Engine)**: Selected for zero-configuration architectural efficiency. It handles robust structured queries on a flat filesystem, maintaining integrity through sequential tables.
 * **CORS (Cross-Origin Resource Sharing)**: Structured using custom origin evaluation closures to allow secure browser handshakes between Port 3000 and Port 5000 loopbacks.
 
