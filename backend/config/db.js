@@ -1,5 +1,5 @@
 
-                  //NO AI SLOP BTW"
+                  //------NO AI SLOP BTW---------//
 
 const sqlite3= require('sqlite3');
 const path = require("path");
