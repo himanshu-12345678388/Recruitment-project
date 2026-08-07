@@ -1,4 +1,10 @@
-const BASE_URL = 'http://localhost:5000/api';
+//const BASE_URL = 'http://localhost:5000/api' ;
+
+
+const BASE_URL = window.location.hostname === 'localhost' 
+  ? 'http://localhost:5000/api' 
+  : 'https://recruitment-project-15jr.onrender.com/api'; 
+
 
 export const apiService = {
   //  Fetching  questions from the backend
