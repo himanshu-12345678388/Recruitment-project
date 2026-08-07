@@ -223,7 +223,7 @@ const submitFinalScorecard = async () => {
     const totalHintsUsed = typeof hintsUsedCount ==='number' ? hintsUsedCount:0;
 
     // 2. Clear mathematical evaluation matching  backend fields
-    let finalOverallScore = (currentAptitudeScore * 10) + (currentMatrixLevelScore * 20) + 50; 
+    let finalOverallScore = (currentAptitudeScore * 6) + (currentMatrixLevelScore * 5) + 25; 
 
     finalOverallScore = finalOverallScore -(totalHintsUsed *10);
 
@@ -231,10 +231,10 @@ const submitFinalScorecard = async () => {
     if(finalOverallScore < 0) finalOverllScore=0;
 
     let performanceClassification = "Junior Developer Candidate";
-    if (finalOverallScore >= 180) performanceClassification = "Elite Core Architect";
-    else if (finalOverallScore >= 150) performanceClassification = "Senior Systems Engineer";
-    else if (finalOverallScore >= 130) performanceClassification = "Pack it up lil bro , its over for u";
-    else performanceClassification="Kill yourself loserr!!";
+    if (finalOverallScore >= 95) performanceClassification = "OutStanding";
+    else if (finalOverallScore >= 85) performanceClassification = "Highy Qualified Engineer";
+    else if (finalOverallScore >= 70) performanceClassification = "Qualified Candidate";
+    else performanceClassification="Pack it Up lil bro ,it's over for u";
 
     //  Package payloads with keys === backend req.body 
     const scorecardPayload = {
@@ -360,7 +360,7 @@ const submitFinalScorecard = async () => {
   if (stage === 3) {
     if (cryptoQuestions.length === 0) return <div className="portal-screen-container"><div className="portal-p-sub">Syncing system rows...</div></div>;
     const currentPuzzle = cryptoQuestions[cryptoIndex];
-    const wordBankOptions = ["HELLO", "WORLD", "access", "denied", "3AIR", "5SKY", "7FLY", "#CORE", "#TEST", "#TRUE"];
+    const wordBankOptions = ["HELLO", "access", "3AIR","#CORE"];
 
     return (
       <div className="portal-screen-container">
