@@ -24,6 +24,12 @@ const db=new sqlite3.Database(dbpath,(err) =>{
 db.serialize(()=>{
 
 
+  // so multiple users can use without latency
+db.run('PRAGMA journal_mode = WAL;');
+db.run('PRAGMA synchronous = NORMAL;');
+
+
+
     //force drop any old table
     db.run(`DROP TABLE IF EXISTS aptitude_questions`);
     db.run(`DROP TABLE IF EXISTS leaderboard`);
@@ -63,7 +69,8 @@ db.serialize(()=>{
 
 
       //clear encrypted_message table
-      db.run(`DELETE FROM encrypted_messages`,[],()=>{
+      db.get("SELECT COUNT(*) as count FROM encrypted_messages", [], (err, row) => {
+  if (row && row.count === 0) {
         console.log('seeding encrypted messages...');
         const sql = `INSERT INTO encrypted_messages (encrypted_message,correct_decoded,hint) VALUES (?,?,?)`;
 
@@ -73,13 +80,15 @@ db.serialize(()=>{
         db.run(sql,["YWNjZXNz","access","Based encoded string format"]);
         db.run(sql,["M0FJUg==","3AIR","Base64 encoded string format"]);
         db.run(sql,["I0NPREU=","#CORE","Based encoded string format"]);
+  }
       });
 
 
 
         //clear data 
-        db.run(`DELETE FROM aptitude_questions`, [], () => {
-    console.log("Seeding fresh questions cleanly...");
+        db.get("SELECT COUNT(*) as count FROM aptitude_questions", [], (err, row) => {
+  if (row && row.count === 0) {
+    console.log('Seeding aptitude questions for the first time...');
         
 
         const stmt=db.prepare(`INSERT INTO aptitude_questions (question,option1,option2,option3,option4,correct_answers) VALUES (?,?,?,?,?,?)`);
@@ -109,8 +118,10 @@ stmt.finalize(() => {
   console.log("Database tables seeded successfully with 10 questions!");
 });
 
-// This closes the db.run('DELETE FROM...') callback AND the db.serialize block cleanly
-  });
+// This closes the db.run('DELETE FROM...') callback cleanly
+  };
+});
+
 });
 
 // Testing the database table structure
@@ -121,6 +132,7 @@ db.all("SELECT name FROM sqlite_master WHERE type='table'", [], (err, rows) => {
   }
   console.log("Database verified! Existing tables:", rows);
 });
+
 
 // Export this file for server.js
 module.exports = db;
