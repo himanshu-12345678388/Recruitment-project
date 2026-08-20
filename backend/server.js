@@ -1,12 +1,4 @@
 
-// to whomever reading my code for some reason
-
-//this is the backend server handler which directly talks with the database also uses db.js file 
-//for some other things . 
-
-//SERVER SIDE IS HANDLED HERE OK ??
-
-
 
 //---- NO AI USED HERE ----//
 
@@ -19,7 +11,7 @@ const cors=require('cors');    //so out frontend and backend can connect easily
 
 const app=express();
 
-// cors so browser allows only our frontend to connect with backend
+
 app.use(cors({
   origin: function (origin, callback) {
     // This automatically approves whatever address the browser uses (localhost or 127.0.0.1)
@@ -86,7 +78,7 @@ app.post('/api/leaderboard',function(req,res){
         }
 
         res.json({
-            succes:true,
+            success:true,
             message:"scorecard saved successfully!!"
         });
     });
@@ -144,7 +136,7 @@ app.post('/api/crypto/verify',(req,res)=>{
 
 
 
-const PORT =process.env.PORT || 5000;
+const PORT = 5000;
 
 //using port 5000 for runnig our backend server
 app.listen(PORT,()=> {

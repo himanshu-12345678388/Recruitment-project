@@ -20,13 +20,17 @@ export default function App() {
   // 2 = Matrix, 
   // 3 = encrypted.
 
+  //ADDING TIMERRRRR
+  const [startTime , setStartTime ] = useState(null);
+
+
   const [stage, setStage] = useState(0);
 
   // Stage 0  Registration States
   const [userName, setUserName] = useState('');
 
   // Stage 1 Aptitude Core States
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState([]);                 // holds the 10 questions from GET /api/questions
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -98,6 +102,7 @@ const [cryptoScore, setCryptoScore] = useState(0);
       const data = await apiService.getQuestions();
       if (data && data.length > 0) {
         setQuestions(data);
+        setStartTime(Date.now());   // starting the timer
         setStage(1);
       } else {
         alert("No question records found in database.");
@@ -208,6 +213,7 @@ const [cryptoScore, setCryptoScore] = useState(0);
 
 
 
+
    
 
 
@@ -215,6 +221,10 @@ const [cryptoScore, setCryptoScore] = useState(0);
   // final leader logic function 
 const submitFinalScorecard = async () => {
   try {
+
+    const elapsedSeconds = Math.floor((Date.now()-startTime) / 1000);
+
+
     // to read scores from aptitude and matrix task
     const currentAptitudeScore = typeof score === 'number' ? score : 0;
     const currentMatrixLevelScore = typeof matrixScore === 'number' ? matrixScore : 0;
@@ -241,7 +251,7 @@ const submitFinalScorecard = async () => {
       name: userName || "Anonymous Candidate",
       score: finalOverallScore,
       classification: performanceClassification,
-      time_taken: 45 // Static tracking baseline in seconds
+      time_taken: elapsedSeconds// Static tracking baseline in seconds
     };
 
     //  get the score card data from port 5000 aka backend
