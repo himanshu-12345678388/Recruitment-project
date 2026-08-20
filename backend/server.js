@@ -2,11 +2,13 @@
 
 //---- NO AI USED HERE ----//
 
+require('dotenv').config();
+
 // importing our database js file /config/db.js
 const { pool , initDb } = require('./config/db');
 
 
-require('dotenv').config();
+
 
 
 //import other core packages
