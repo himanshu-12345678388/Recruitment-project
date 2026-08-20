@@ -5,7 +5,7 @@
 require('dotenv').config();
 
 // importing our database js file /config/db.js
-const { pool , initDb } = require('./config/db');
+const { pool , initDb } = require('./config/db.js');
 
 
 
